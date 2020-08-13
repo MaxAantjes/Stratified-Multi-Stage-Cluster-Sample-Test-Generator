@@ -4,18 +4,33 @@ library(tidyverse)
 SEED <- 1
 
 ## Set the total population size
-TOTPOP <- 1000000
+TOTPOP <- 17643054
+
+## Generate positive normal distribution
+posrnorm <- function(n, m, sd){
+        x <- c()
+        r <- 0
+        repeat{
+                x <- rnorm(n, m, sd)
+                r <- r + 1
+                if(r > 1000){
+                        message("Attempt to find distribution with only positive values stopped after 1000 repetitions.")
+                        break}
+                if(all(x>0)){
+                        return(x)
+                        break}}}
 
 ## OPTIONAL: generate the subpopulation size, subpopulation size is assumed to be normally distributed. 
-SUBNUMBER <- 240 
+SUBNUM <- 224 
+MEAN <- TOTPOP/SUBNUM
+SD <- 1
         
-x <- data.frame(rnorm(SUBNUMBER, 100, 30))
-names(x) <- "value"
+x <- data.frame(value = posrnorm(n = SUBNUMBER, m = MEAN, sd = 2000))
 x <- x%>%
         mutate(tot = sum(value)) %>%
         mutate(prop = value/tot) %>%
-        mutate(population = prop * SIZE) %>%
-        mutate(test = sum(population))
+        mutate(population = round(prop * SIZE)) %>%
+        select(population)
 
 generator <- function(seed = SEED, size = SIZE) {
         set.seed(seed)
