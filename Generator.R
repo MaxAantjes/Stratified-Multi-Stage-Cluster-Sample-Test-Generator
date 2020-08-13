@@ -1,7 +1,10 @@
 library(tidyverse)
 
 ## Set the seed
-SEED <- 1
+SE
+
+
+ED <- 1
 set.seed(SEED)
 
 ## Set the total population size
@@ -21,29 +24,25 @@ posrnorm <- function(n, m, sd){
                         return(x)
                         break}}}
 
-## OPTIONAL: generate the subpopulation size, subpopulation size is assumed to be normally distributed. 
+## OPTIONAL: generate the subpopulation sizes
+
+        ## OPTION 1: subpopulation size is assumed to be normally         distributed. 
 SUBNUM <- 224 
 MEAN <- TOTPOP/SUBNUM
 SD <- 20000
         
 x <- data.frame(value = posrnorm(n = SUBNUM, m = MEAN, sd = SD))
+
+        ## OPTION 2: sub population size is assumed to be skewed.         A beta-distribution is plausibly a good option to                 approximate the data. 
+alpha = 5
+beta = 1
+x <- data.frame(value = rbeta(240, alpha, beta))
+
+        ## Computation of subpopulation sizes
 x <- x%>%
         mutate(tot = sum(value)) %>%
         mutate(prop = value/tot) %>%
         mutate(population = round(prop * TOTPOP)) %>%
-        select(population)
+        select(population) %>%
+        rowid_to_column(var = "ID")
 
-## OPTIONAL: generate the subpopulation size, subpopulation size is assumed to be right-skewed. The level of skewed-ness can be altered by changing the SKEW scale from 0 (most extreme skewdness) to 5 (approaching a normal distribution). 
-SKEW <- 1
-
-x <- data.frame(value = rbeta(240, 1, 5))
-x <- x%>%
-        mutate(tot = sum(value)) %>%
-        mutate(prop = value/tot) %>%
-        mutate(population = round(prop * TOTPOP)) %>%
-        select(population)
-
-## Generator
-
-generator <- function(seed = SEED, size = SIZE) {
-        set.seed(seed)}
